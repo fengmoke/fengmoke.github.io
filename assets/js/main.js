@@ -215,6 +215,8 @@
 
 // CV统计功能 - 完整多用户版本（支持查看、下载、点赞）
 $(document).ready(function() {
+    console.log('=== 统计功能开始初始化 ===');
+    
     // 生成用户唯一标识（基于浏览器指纹）
     function generateUserID() {
         let userID = localStorage.getItem('cv_user_id');
@@ -222,6 +224,9 @@ $(document).ready(function() {
             // 生成基于时间戳和随机数的用户ID
             userID = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('cv_user_id', userID);
+            console.log('✅ 生成新用户ID:', userID);
+        } else {
+            console.log('✅ 使用现有用户ID:', userID);
         }
         return userID;
     }
@@ -229,80 +234,112 @@ $(document).ready(function() {
     // 获取所有用户的查看记录
     function getAllViews() {
         const viewsData = localStorage.getItem('cv_all_views');
-        return viewsData ? JSON.parse(viewsData) : {};
+        const data = viewsData ? JSON.parse(viewsData) : {};
+        console.log('📊 查看记录数据:', data);
+        return data;
     }
 
     // 保存所有用户的查看记录
     function saveAllViews(viewsData) {
         localStorage.setItem('cv_all_views', JSON.stringify(viewsData));
+        console.log('💾 保存查看记录:', viewsData);
     }
 
     // 获取所有用户的下载记录
     function getAllDownloads() {
         const downloadsData = localStorage.getItem('cv_all_downloads');
-        return downloadsData ? JSON.parse(downloadsData) : {};
+        const data = downloadsData ? JSON.parse(downloadsData) : {};
+        console.log('📊 下载记录数据:', data);
+        return data;
     }
 
     // 保存所有用户的下载记录
     function saveAllDownloads(downloadsData) {
         localStorage.setItem('cv_all_downloads', JSON.stringify(downloadsData));
+        console.log('💾 保存下载记录:', downloadsData);
     }
 
     // 获取所有用户的点赞记录
     function getAllLikes() {
         const likesData = localStorage.getItem('cv_all_likes');
-        return likesData ? JSON.parse(likesData) : {};
+        const data = likesData ? JSON.parse(likesData) : {};
+        console.log('📊 点赞记录数据:', data);
+        return data;
     }
 
     // 保存所有用户的点赞记录
     function saveAllLikes(likesData) {
         localStorage.setItem('cv_all_likes', JSON.stringify(likesData));
+        console.log('💾 保存点赞记录:', likesData);
     }
 
     // 获取总查看次数（所有用户的累积）
     function getTotalViews() {
         const viewsData = getAllViews();
-        return Object.values(viewsData).filter(view => view === true).length;
+        const total = Object.values(viewsData).filter(view => view === true).length;
+        console.log('👁️ 总查看次数:', total);
+        return total;
     }
 
     // 获取总下载次数（所有用户的累积）
     function getTotalDownloads() {
         const downloadsData = getAllDownloads();
-        return Object.values(downloadsData).filter(download => download === true).length;
+        const total = Object.values(downloadsData).filter(download => download === true).length;
+        console.log('📥 总下载次数:', total);
+        return total;
     }
 
     // 获取总点赞数（所有用户的累积）
     function getTotalLikes() {
         const likesData = getAllLikes();
-        return Object.values(likesData).filter(like => like === true).length;
+        const total = Object.values(likesData).filter(like => like === true).length;
+        console.log('❤️ 总点赞数:', total);
+        return total;
     }
 
     // 检查当前用户是否已查看
     function hasUserViewed() {
         const userID = generateUserID();
         const viewsData = getAllViews();
-        return viewsData[userID] === true;
+        const hasViewed = viewsData[userID] === true;
+        console.log('👤 用户是否已查看:', hasViewed);
+        return hasViewed;
     }
 
     // 检查当前用户是否已下载
     function hasUserDownloaded() {
         const userID = generateUserID();
         const downloadsData = getAllDownloads();
-        return downloadsData[userID] === true;
+        const hasDownloaded = downloadsData[userID] === true;
+        console.log('👤 用户是否已下载:', hasDownloaded);
+        return hasDownloaded;
     }
 
     // 检查当前用户是否已点赞
     function hasUserLiked() {
         const userID = generateUserID();
         const likesData = getAllLikes();
-        return likesData[userID] === true;
+        const hasLiked = likesData[userID] === true;
+        console.log('👤 用户是否已点赞:', hasLiked);
+        return hasLiked;
     }
 
     // 更新页面显示
     function updateStatsDisplay() {
-        $('#view-count').text(getTotalViews());
-        $('#download-count').text(getTotalDownloads());
-        $('#like-count').text(getTotalLikes());
+        console.log('🔄 开始更新统计显示...');
+        
+        const totalViews = getTotalViews();
+        const totalDownloads = getTotalDownloads();
+        const totalLikes = getTotalLikes();
+        
+        console.log('📈 显示数据 - 查看:', totalViews, '下载:', totalDownloads, '点赞:', totalLikes);
+        
+        // 更新页面显示
+        $('#view-count').text(totalViews);
+        $('#download-count').text(totalDownloads);
+        $('#like-count').text(totalLikes);
+        
+        console.log('✅ 页面显示已更新');
         
         // 根据用户点赞状态设置颜色
         const $heartIcon = $('.like-container .fa-heart');
@@ -313,15 +350,18 @@ $(document).ready(function() {
             $likeBtn.addClass('liked');
             $heartIcon.css('color', '#e74c3c');
             $likeCount.css('color', '#e74c3c');
+            console.log('🎨 用户已点赞，设置红色');
         } else {
             $likeBtn.removeClass('liked');
             $heartIcon.css('color', '');
             $likeCount.css('color', '');
+            console.log('🎨 用户未点赞，清除颜色');
         }
     }
 
     // 增加查看次数（每次页面加载时）- 多用户版本
     if (!sessionStorage.getItem('cv_viewed')) {
+        console.log('➕ 记录新用户查看...');
         const userID = generateUserID();
         const viewsData = getAllViews();
         
@@ -330,14 +370,19 @@ $(document).ready(function() {
             viewsData[userID] = true;
             saveAllViews(viewsData);
             
-            console.log('用户 ' + userID + ' 首次查看，总查看数：' + getTotalViews());
+            console.log('✅ 用户 ' + userID + ' 首次查看，总查看数：' + getTotalViews());
+        } else {
+            console.log('ℹ️ 用户 ' + userID + ' 已查看过');
         }
         
         sessionStorage.setItem('cv_viewed', 'true');
+    } else {
+        console.log('ℹ️ 用户已在本会话中查看过页面');
     }
 
     // 下载计数 - 多用户版本
     $('#download-link').on('click', function() {
+        console.log('🖱️ 下载链接被点击...');
         const userID = generateUserID();
         const downloadsData = getAllDownloads();
         
@@ -346,95 +391,128 @@ $(document).ready(function() {
             downloadsData[userID] = true;
             saveAllDownloads(downloadsData);
             
-            console.log('用户 ' + userID + ' 下载成功，总下载数：' + getTotalDownloads());
+            console.log('✅ 用户 ' + userID + ' 下载成功，总下载数：' + getTotalDownloads());
             
             // 显示下载成功提示
             showDownloadMessage('下载成功！感谢您的关注。');
         } else {
             // 用户已经下载过
+            console.log('ℹ️ 用户 ' + userID + ' 已经下载过');
             showDownloadMessage('您已经下载过简历了。');
         }
         
         updateStatsDisplay();
     });
 
-    // 改进的点赞功能 - 支持多用户
-    $('#like-btn').on('click', function() {
-        const $likeBtn = $(this);
-        const $heartIcon = $('.like-container .fa-heart');
-        const $likeCount = $('#like-count');
-        const userID = generateUserID();
-        const likesData = getAllLikes();
-        const userHasLiked = hasUserLiked();
+    // 改进的点赞功能 - 支持多用户（修复实时更新问题）
+$('#like-btn').on('click', function() {
+    console.log('🖱️ 点赞按钮被点击...');
+    const $likeBtn = $(this);
+    const $heartIcon = $('.like-container .fa-heart');
+    const $likeCount = $('#like-count');
+    const userID = generateUserID();
+    const likesData = getAllLikes();
+    const userHasLiked = hasUserLiked();
 
-        if (!userHasLiked) {
-            // 用户点赞
-            likesData[userID] = true;
-            saveAllLikes(likesData);
-            
-            // 添加点赞动画和颜色变化
-            $likeBtn.addClass('liked');
-            $heartIcon.css('color', '#e74c3c');
-            $likeCount.css('color', '#e74c3c');
-            
-            // 显示点赞成功提示
-            showLikeMessage('感谢您的点赞！您的支持已被记录。');
-            
-            console.log('用户 ' + userID + ' 点赞成功，总点赞数：' + getTotalLikes());
-        } else {
-            // 用户取消点赞（可选功能）
-            delete likesData[userID];
-            saveAllLikes(likesData);
-            
-            // 移除点赞动画和颜色变化
-            $likeBtn.removeClass('liked');
-            $heartIcon.css('color', '');
-            $likeCount.css('color', '');
-            
-            // 显示取消点赞提示
-            showLikeMessage('您已取消点赞。');
-            
-            console.log('用户 ' + userID + ' 取消点赞，总点赞数：' + getTotalLikes());
-        }
+    if (!userHasLiked) {
+        // 用户点赞
+        likesData[userID] = true;
+        saveAllLikes(likesData);
         
+        // 立即更新UI状态
+        $likeBtn.addClass('liked');
+        $heartIcon.css('color', '#e74c3c');
+        $likeCount.css('color', '#e74c3c');
+        
+        // 显示点赞成功提示
+        showLikeMessage('感谢您的点赞！您的支持已被记录。');
+        
+        console.log('✅ 用户 ' + userID + ' 点赞成功');
+    } else {
+        // 用户取消点赞
+        delete likesData[userID];
+        saveAllLikes(likesData);
+        
+        // 立即更新UI状态
+        $likeBtn.removeClass('liked');
+        $heartIcon.css('color', '');
+        $likeCount.css('color', '');
+        
+        // 显示取消点赞提示
+        showLikeMessage('您已取消点赞。');
+        
+        console.log('❌ 用户 ' + userID + ' 取消点赞');
+    }
+    
+    // 延迟一小段时间后更新统计显示，确保本地存储已同步
+    setTimeout(function() {
         updateStatsDisplay();
-    });
+        console.log('🔄 延迟更新统计显示完成');
+    }, 50);
+});
 
-    // 显示点赞消息
-    function showLikeMessage(message) {
-        let $message = $('<div class="like-message">' + message + '</div>');
-        $('.like-container').append($message);
-        
-        $message.fadeIn(300).delay(1500).fadeOut(300, function() {
-            $(this).remove();
-        });
+// 改进的更新页面显示函数 - 确保数据同步
+function updateStatsDisplay() {
+    console.log('🔄 开始更新统计显示...');
+    
+    // 强制重新获取最新数据
+    const totalViews = getTotalViews();
+    const totalDownloads = getTotalDownloads();
+    const totalLikes = getTotalLikes();
+    
+    console.log('📈 显示数据 - 查看:', totalViews, '下载:', totalDownloads, '点赞:', totalLikes);
+    
+    // 强制更新页面显示
+    $('#view-count').text(totalViews);
+    $('#download-count').text(totalDownloads);
+    $('#like-count').text(totalLikes);
+    
+    console.log('✅ 页面显示已更新');
+    
+    // 根据用户点赞状态设置颜色
+    const $heartIcon = $('.like-container .fa-heart');
+    const $likeCount = $('#like-count');
+    const $likeBtn = $('#like-btn');
+    
+    if (hasUserLiked()) {
+        $likeBtn.addClass('liked');
+        $heartIcon.css('color', '#e74c3c');
+        $likeCount.css('color', '#e74c3c');
+        console.log('🎨 用户已点赞，设置红色');
+    } else {
+        $likeBtn.removeClass('liked');
+        $heartIcon.css('color', '');
+        $likeCount.css('color', '');
+        console.log('🎨 用户未点赞，清除颜色');
     }
+}
 
-    // 显示下载消息
-    function showDownloadMessage(message) {
-        let $message = $('<div class="download-message">' + message + '</div>');
-        $('.cv-download').append($message);
-        
-        $message.css({
-            'position': 'absolute',
-            'top': '-30px',
-            'left': '50%',
-            'transform': 'translateX(-50%)',
-            'background': '#4CAF50',
-            'color': 'white',
-            'padding': '5px 10px',
-            'border-radius': '3px',
-            'font-size': '12px',
-            'z-index': '1000'
-        });
-        
-        $message.fadeIn(300).delay(1500).fadeOut(300, function() {
-            $(this).remove();
-        });
+// 改进的获取总点赞数函数 - 确保数据准确性
+function getTotalLikes() {
+    const likesData = getAllLikes();
+    // 确保只统计值为true的记录，并处理可能的undefined值
+    const total = Object.values(likesData).filter(like => like === true).length;
+    console.log('❤️ 总点赞数:', total, '数据详情:', likesData);
+    return total;
+}
+
+// 改进的保存点赞记录函数 - 确保数据同步
+function saveAllLikes(likesData) {
+    localStorage.setItem('cv_all_likes', JSON.stringify(likesData));
+    console.log('💾 保存点赞记录:', likesData);
+    
+    // 强制同步本地存储
+    if (localStorage.getItem('cv_all_likes') === JSON.stringify(likesData)) {
+        console.log('✅ 本地存储同步成功');
+    } else {
+        console.log('⚠️ 本地存储同步可能有问题');
     }
+}
 
     // 初始化显示
+    console.log('🚀 初始化统计显示...');
     updateStatsDisplay();
+    console.log('✅ 统计功能初始化完成');
 
     // 添加键盘快捷键支持（空格键点赞）
     $(document).on('keydown', function(e) {
